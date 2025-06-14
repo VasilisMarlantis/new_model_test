@@ -1,23 +1,22 @@
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
-import argparse
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+import warnings
 
-def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=50, num_return_sequences=3):
-    """
-    Proper Pegasus paraphrasing implementation with:
-    - Explicit tokenizer/model loading
-    - Device management
-    - Correct prompt formatting
-    """
-    # Load model and tokenizer
+# Suppress warnings
+warnings.filterwarnings("ignore")
+
+def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=60):
+    """Self-contained paraphrasing with embedded input text"""
+    # Load model
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+
+    # Format input - TEXT NOW EMBEDDED IN SCRIPT
+    input_text = "The quick brown fox jumps over the lazy dog"  # <- Your text here
+    prompt = f"paraphrase: {input_text}"
     
-    # Format input text (Pegasus requires "paraphrase: " prefix)
-    input_text = f"paraphrase: {text}"
-    
-    # Tokenize and generate
+    # Generate paraphrases
     inputs = tokenizer(
-        [input_text],
+        [prompt],
         truncation=True,
         padding="longest",
         max_length=max_length,
@@ -25,26 +24,18 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=50, nu
     )
     
     outputs = model.generate(
-    **inputs,
-    max_length=100,  # Increased from 50
-    num_return_sequences=num_return_sequences,
-    num_beams=10,    # More beams = better diversity (but slower)
-    early_stopping=True,
-    length_penalty=2.0,  # Penalizes short outputs
-    no_repeat_ngram_size=2,  # Avoids word repetition
-)
+        **inputs,
+        max_length=max_length,
+        num_beams=10,
+        temperature=0.7,
+        do_sample=True,
+        early_stopping=True
+    )
     
+    # Return cleaned results
     return tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--text", type=str, default="Rihanna’s Fenty Beauty opens first Mainland China concept store")
-    parser.add_argument("--max_length", type=int, default=50)
-    parser.add_argument("--num_sequences", type=int, default=3)
-    args = parser.parse_args()
-
-    results = paraphrase(args.text, max_length=args.max_length, num_return_sequences=args.num_sequences)
-    
-    print("\nGenerated Paraphrases:")
-    for i, res in enumerate(results, 1):
-        print(f"{i}. {res}")
+    print("Generating paraphrases...\n")
+    for i, result in enumerate(paraphrase(""), 1):  # Text already embedded above
+        print(f"{i}. {result}")
