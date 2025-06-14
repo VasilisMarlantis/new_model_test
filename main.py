@@ -52,7 +52,7 @@ This is not the first time KFC has played "I thought you were doing April Fools"
 
 KFC's K Coffee launched a co-branded roasted coconut latte earlier this year, aiming to imitate "the taste of your childhood." This time, the collaboration is heavier on the seasonal.
 
-However, no one likes free candy, particularly because it is less about the partners' nostalgic "emotional value.""""
+However, no one likes free candy, particularly because it is less about the partners' nostalgic "emotional value."""
 
     results = paraphrase(input_text, max_length=args.max_length, num_return_sequences=args.num_sequences)
 
