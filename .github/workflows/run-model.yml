@@ -1,25 +1,15 @@
-name: Run Paraphraser
+name: Paraphrase Generator
 
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:  # Allows manual triggering
+on: [push, workflow_dispatch]
 
 jobs:
-  paraphrase:
+  run:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
-
-      - name: Install dependencies
-        run: |
-          pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
-          pip install transformers sentencepiece protobuf
-
-      - name: Run paraphrasing
-        run: python main.py  # No arguments needed
+      - run: |
+          pip install torch transformers sentencepiece protobuf
+          python main.py
