@@ -1,19 +1,17 @@
-name: Run Pegasus Paraphraser
+name: Run Paraphraser
 
 on:
   push:
     branches: [main]
-  pull_request:
-    branches: [main]
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
-  run-paraphraser:
+  paraphrase:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.10
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
@@ -22,11 +20,6 @@ jobs:
         run: |
           pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
           pip install transformers sentencepiece protobuf
-          pip install --upgrade accelerate  # Helps with model loading
 
       - name: Run paraphrasing
-        run: |
-          python main.py \
-            --text "Rihanna’s Fenty Beauty opens first Mainland China concept store" \
-            --max_length 50 \
-            --num_sequences 3
+        run: python main.py  # No arguments needed
