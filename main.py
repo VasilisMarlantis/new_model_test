@@ -15,13 +15,18 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=50, nu
         return_tensors="pt"
     )
     
-    outputs = model.generate(
-        **inputs,
-        max_length=max_length,
-        num_return_sequences=num_return_sequences,
-        num_beams=5,
-        early_stopping=True
-    )
+   outputs = model.generate(
+    **inputs,
+    max_length=3000,           # You can bump this up if needed (e.g. 100 or 150)
+    num_return_sequences=num_return_sequences,
+    do_sample=True,                  # Enables sampling (instead of beam search)
+    temperature=0.9,                 # Lower = more deterministic, Higher = more creative (suggest 0.8–1.2)
+    top_k=50,                        # Limits to top-k likely next tokens (e.g. 50 or 100)
+    top_p=0.95,                      # Nucleus sampling: choose from top 95% probability mass
+    repetition_penalty=1.2,         # Penalize repeating phrases
+    no_repeat_ngram_size=3,         # Avoid repeated 3-grams (optional)
+)
+
     
     return tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
