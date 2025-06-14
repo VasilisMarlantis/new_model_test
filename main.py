@@ -11,7 +11,7 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=300, n
         [input_text],
         truncation=True,
         padding="longest",
-        max_length=3000,  # for long paragraph input
+        max_length=512,  # for long paragraph input
         return_tensors="pt"
     )
 
