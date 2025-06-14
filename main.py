@@ -25,12 +25,14 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=50, nu
     )
     
     outputs = model.generate(
-        **inputs,
-        max_length=max_length,
-        num_return_sequences=num_return_sequences,
-        num_beams=5,
-        early_stopping=True
-    )
+    **inputs,
+    max_length=100,  # Increased from 50
+    num_return_sequences=num_return_sequences,
+    num_beams=10,    # More beams = better diversity (but slower)
+    early_stopping=True,
+    length_penalty=2.0,  # Penalizes short outputs
+    no_repeat_ngram_size=2,  # Avoids word repetition
+)
     
     return tokenizer.batch_decode(outputs, skip_special_tokens=True)
 
