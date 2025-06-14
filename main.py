@@ -1,19 +1,21 @@
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
 import argparse
-import warnings
 
-# Suppress unnecessary warnings
-warnings.filterwarnings("ignore", message="Some weights of PegasusForConditionalGeneration")
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=60, num_return_sequences=5):
-    """Improved Pegasus paraphrasing with better generation parameters"""
+def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=50, num_return_sequences=3):
+    """
+    Proper Pegasus paraphrasing implementation with:
+    - Explicit tokenizer/model loading
+    - Device management
+    - Correct prompt formatting
+    """
+    # Load model and tokenizer
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     
-    # Pegasus-specific formatting
+    # Format input text (Pegasus requires "paraphrase: " prefix)
     input_text = f"paraphrase: {text}"
     
+    # Tokenize and generate
     inputs = tokenizer(
         [input_text],
         truncation=True,
@@ -26,10 +28,7 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=60, nu
         **inputs,
         max_length=max_length,
         num_return_sequences=num_return_sequences,
-        num_beams=15,  # Increased from default 5
-        temperature=0.7,  # Added for more creativity
-        do_sample=True,  # Enables temperature sampling
-        top_k=50,  # Increased diversity
+        num_beams=5,
         early_stopping=True
     )
     
@@ -38,11 +37,12 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=60, nu
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--text", type=str, default="Rihanna’s Fenty Beauty opens first Mainland China concept store")
-    parser.add_argument("--max_length", type=int, default=60)
-    parser.add_argument("--num_sequences", type=int, default=5)
+    parser.add_argument("--max_length", type=int, default=50)
+    parser.add_argument("--num_sequences", type=int, default=3)
     args = parser.parse_args()
 
-    print(f"Original: {args.text}\n")
-    print("Generated Paraphrases:")
-    for i, res in enumerate(paraphrase(args.text, args.max_length, args.num_sequences), 1):
+    results = paraphrase(args.text, max_length=args.max_length, num_return_sequences=args.num_sequences)
+    
+    print("\nGenerated Paraphrases:")
+    for i, res in enumerate(results, 1):
         print(f"{i}. {res}")
