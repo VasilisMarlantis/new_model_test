@@ -32,7 +32,31 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Hardcoded input text here
-    input_text = "The quick brown fox jumps over the lazy dog"
+    input_text = """ As this year's halloween falls on a thursday, it's only fitting that kfc, a confectionary manufacturer and manufacturer of the iconic hainan candy bar, would come out swinging on all hallows' day eve.
+
+
+The event is appropriately named "" (lit.
+
+
+Going wild and giving out candy, playing on the fact that "" is the verb for both english and french.
+
+
+Of course, one million candies was given away, but kfc also stated in the t&cs that each customer will be given a million candies.
+
+
+Given that there are 5,000 participating restaurants around the country, only the first 100 people to arrive at each restaurant will receive the free coconut-flavoured treats.
+
+
+Some netizens have voiced their dissatisfactions.
+
+
+This is not the first time kfc has played "i thought you were doing april fools" in the meagre number, and the joke "i thought you were doing 2 candies" was not the first time kfc has appeared on the internet.
+
+
+Kfc's k coffee launched a co-branded roasted coconut latte earlier this year, aiming to imitate "the taste of your childhood." this time, the collaboration is heavier on the seasonal.
+
+
+However, no one likes free candy, particularly because it is less about the partners' nostalgic "emotional value.". """
 
     results = paraphrase(input_text, max_length=args.max_length, num_return_sequences=args.num_sequences)
     
