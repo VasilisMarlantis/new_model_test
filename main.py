@@ -17,7 +17,7 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=300, n
 
     outputs = model.generate(
         **inputs,
-        max_length=max_lenth,
+        max_length=max_length,
         num_return_sequences=num_return_sequences,
         do_sample=True,
         temperature=0.9,
