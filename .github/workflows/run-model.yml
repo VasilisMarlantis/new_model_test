@@ -1,13 +1,19 @@
-name: Run Paraphraser
-on: [push, pull_request]
+name: Run Pegasus Paraphraser
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
-  run-model:
+  run-paraphraser:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Set up Python
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
@@ -15,8 +21,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
-          pip install transformers sentencepiece  # Required for Pegasus/T5
+          pip install transformers sentencepiece protobuf
+          pip install --upgrade accelerate  # Helps with model loading
 
-      - name: Run model
+      - name: Run paraphrasing
         run: |
-          python main.py
+          python main.py \
+            --text "The quick brown fox jumps over the lazy dog" \
+            --max_length 50 \
+            --num_sequences 3
