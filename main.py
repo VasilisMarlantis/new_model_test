@@ -1,25 +1,22 @@
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 import argparse
-import nltk
-from nltk.tokenize import sent_tokenize
 
-# Download tokenizer data
-nltk.download('punkt')
-
-def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=256, num_return_sequences=1):
+def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=128, num_return_sequences=3):
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
-    sentences = sent_tokenize(text)
-    paraphrased_sentences = []
+    # Split into rough sentences using full stops
+    sentences = [s.strip() for s in text.split('.') if s.strip()]
 
-    for sent in sentences:
-        input_text = f"paraphrase: {sent}"
+    all_outputs = []
+
+    for sentence in sentences:
+        input_text = f"paraphrase: {sentence}"
         inputs = tokenizer(
             [input_text],
             truncation=True,
             padding="longest",
-            max_length=512,
+            max_length=max_length,
             return_tensors="pt"
         )
 
@@ -32,26 +29,26 @@ def paraphrase(text, model_name="tuner007/pegasus_paraphrase", max_length=256, n
             top_k=50,
             top_p=0.95,
             repetition_penalty=1.2,
-            no_repeat_ngram_size=3
+            no_repeat_ngram_size=3,
         )
 
         decoded = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-        paraphrased_sentences.extend(decoded)
+        all_outputs.append(decoded)
 
-    return paraphrased_sentences
+    return all_outputs
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--max_length", type=int, default=256)
-    parser.add_argument("--num_sequences", type=int, default=1)
+    parser.add_argument("--max_length", type=int, default=128)
+    parser.add_argument("--num_sequences", type=int, default=3)
     args = parser.parse_args()
 
-    # Hardcoded long input text
-    input_text = """As this year's Halloween falls on a Thursday, it's only fitting that KFC...
-    ...This time, the collaboration is heavier on the seasonal."""
+    input_text = """Your long paragraph here..."""
 
     results = paraphrase(input_text, max_length=args.max_length, num_return_sequences=args.num_sequences)
 
-    print("\nGenerated Paraphrased Sentences:")
-    for i, res in enumerate(results, 1):
-        print(f"{i}. {res}")
+    print("\nGenerated Paraphrases:")
+    for i, paraphrases in enumerate(results, 1):
+        print(f"\nOriginal sentence {i}:")
+        for j, p in enumerate(paraphrases, 1):
+            print(f"  {j}. {p}")
