@@ -22,11 +22,8 @@ jobs:
         run: |
           pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
           pip install transformers sentencepiece protobuf
-          pip install --upgrade accelerate  # Helps with model loading
+          pip install --upgrade accelerate
 
       - name: Run paraphrasing
         run: |
-          python main.py \
-            --text "The quick brown fox jumps over the lazy dog" \
-            --max_length 50 \
-            --num_sequences 3
+          python main.py --max_length 50 --num_sequences 3
